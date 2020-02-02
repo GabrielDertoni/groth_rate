@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from tqdm import tqdm
 
 
 # Calculate the equilibrium constant
@@ -16,13 +17,11 @@ def equilibrium_cts(r, x, iter_prev=1000, iter_after=1000, tolerance=0.01):
   for i in range(iter_after):
     ans = r * ans * (1 - ans)
     arr.append(ans)
-  
-  for i in range(1, len(arr)):
-    deviation = abs(arr[0] - arr[i])
+    deviation = abs(arr[0] - ans)
     if deviation < tolerance:
-      return arr[:i]
+      return arr[:i+1]
   
-  return -1
+  return arr
 
 # Plot equilibrium function
 def plot_equilibrium(r, x, iterations=100):
@@ -38,18 +37,12 @@ def plot_equilibrium(r, x, iterations=100):
   plt.xlim(0, iterations)
   plt.show()
 
-def plot_chaos(r, iterations, increment=0.0001, iter_prev=1000, iter_after=1000, tolerance=0.01):
+def plot_chaos(r, iterations, iter_prev=1000, iter_after=2000, tolerance=0.001):
+  increment = 4. / iterations
   arr_x = []
   arr_y = []
-  for i in range(iterations):
+  for i in tqdm(range(iterations)):
     eq_cts = equilibrium_cts(r, .4, iter_prev=iter_prev, iter_after=iter_after, tolerance=tolerance)
-    if eq_cts == -1:
-      print(i, "Error at {}".format(r))
-      plt.scatter(arr_x, arr_y, s=.5)
-      plt.ylim(0, 1)
-      # plt.xlim(0, iterations)
-      plt.show()
-      return
 
     for const in eq_cts:
       arr_x.append(r)
@@ -60,7 +53,6 @@ def plot_chaos(r, iterations, increment=0.0001, iter_prev=1000, iter_after=1000,
   plt.scatter(arr_x, arr_y, s=.5)
   plt.ylim(0, 1)
   plt.show()
-
 
 
 if __name__ == '__main__':
